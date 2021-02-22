@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Grid from '@material-ui/core/Grid';
@@ -16,7 +16,7 @@ import GoogleLogin from 'react-google-login';
 import { useHistory } from "react-router-dom";
 // import FacebookLogin from 'react-facebook-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
-
+import {UserContext} from '../context/index'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -35,15 +35,26 @@ const Login = () => {
     const classes = useStyles();
     const [token, setToken] = useState();
     const history = useHistory();
+  const [userToken,setUserToken]=useContext(UserContext);
+  const usertoken =  localStorage.getItem("token");
+ 
 
 
+  console.log(userToken,"value token.......")
     const responseGoogle = async (response) => {
         
         const tokenid = await response.accessToken;
+        
         console.log("token Id ", tokenid);
-        if(tokenid){
+        let token = localStorage.getItem("token");
+        console.log("already have token id", token)
+        if(token){
+                
+                
                 history.push("/profile")
         }else{
+                localStorage.setItem("token",tokenid)
+                setUserToken(tokenid)
                 alert("Please Login Again!!")
         }
    }
@@ -134,7 +145,7 @@ const Login = () => {
                         </Button> */}
                         <FacebookLogin
                                 appId="165016625278519"
-                                autoLoad
+                                
                                 callback={responseFacebook}
                                 render={renderProps => (
                                       
@@ -168,7 +179,10 @@ const Login = () => {
            
 
         </Grid>
-    )
+        )
+        
+                                
+    
 }
 
 export default Login;
