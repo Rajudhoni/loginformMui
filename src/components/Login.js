@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Grid from '@material-ui/core/Grid';
@@ -12,8 +12,10 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import SmsIcon from '@material-ui/icons/Sms';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
-import Divider from '@material-ui/core/Divider';
-
+import GoogleLogin from 'react-google-login';
+import { useHistory } from "react-router-dom";
+// import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 
 
 
@@ -31,6 +33,34 @@ const useStyles = makeStyles((theme) => ({
 
 const Login = () => {
     const classes = useStyles();
+    const [token, setToken] = useState();
+    const history = useHistory();
+
+
+    const responseGoogle = async (response) => {
+        
+        const tokenid = await response.accessToken;
+        console.log("token Id ", tokenid);
+        if(tokenid){
+                history.push("/profile")
+        }else{
+                alert("Please Login Again!!")
+        }
+   }
+   const onfailResponse = (res) => {
+           console.log(res);
+   }
+
+   const responseFacebook = async (response) => {
+        const tokenid = await response.accessToken;
+        console.log("fb token id", tokenid);
+        if(tokenid){
+                history.push("/profile");
+        }else{
+                alert("please login again!!")
+        }
+      }
+
     return(
         <Grid >
             <Paper elevation={10} className={classes.paperStyle}>
@@ -70,22 +100,49 @@ const Login = () => {
                  >
                  
                         
-                        <Button variant="contained" size="small" 
+                        {/* <Button variant="contained" size="small" 
                                 color="secondary"  
                                 startIcon={<MailOutlineIcon/>}
                                 style={{backgroundColor: "#e66357"}}
                          >
                                 Gmail
-                        </Button>
+                        </Button> */}
+
+                        <GoogleLogin
+                        clientId="383103237717-afkqsqagomqs4i159septrk5cjeahjc1.apps.googleusercontent.com"
+                        render={renderProps => (
+                                <Button variant="contained" size="small" color="secondary" startIcon={<MailOutlineIcon/>}  style={{backgroundColor: "#e66357"}}
+                                        onClick={renderProps.onClick} disabled={renderProps.disabled}>
+                                        Gmail</Button>
+                              )}
+                        buttonText="Login"
+                        onSuccess={responseGoogle}
+                        onFailure={onfailResponse}
+                        cookiePolicy={'single_host_origin'}
+                        />
+
+
+
                        
                        
-                        <Button variant="contained" 
+                        {/* <Button variant="contained" 
                                 size="small" color="primary" 
                                 startIcon={<FacebookIcon />} 
                                 // style={{width:"105px"}}
                         >
                                 Facebook
-                        </Button>
+                        </Button> */}
+                        <FacebookLogin
+                                appId="165016625278519"
+                                autoLoad
+                                callback={responseFacebook}
+                                render={renderProps => (
+                                      
+                                        <Button variant="contained" size="small" color="primary" 
+                                                startIcon={<FacebookIcon />} style={{width:"105px"}}  
+                                                onClick={renderProps.onClick} disabled={renderProps.disabled}>Facebook</Button>
+                                )}
+                         />
                       
 
                      
